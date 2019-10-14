@@ -7,22 +7,17 @@ quizzes = JsonBlueprint('quizzes', __name__)
 _LOADED_QUIZZES = {}  # list of available quizzes
 _QUIZNUMBER = 0  # index of the last created quizzes
 
-
-# TODO: complete the decoration
 @quizzes.route("/quizzes")
 def all_quizzes():
     if 'POST' == request.method:
-        # TODO: Create new quiz 
+       return create_quiz(request)
     elif 'GET' == request.method:
-        # TODO: Retrieve all loaded quizzes
+        return get_all_quizzes()
 
-    return result
 
-# TODO: complete the decoration
 @quizzes.route("/quizzes/loaded", methods=['GET'])
 def loaded_quizzes():  # returns the number of quizzes currently loaded in the system
-    return # TODO: Return the correct number
-
+    return jsonify({"Number of quizzes ":_LOADED_QUIZZES})
 
 # TODO: complete the decoration
 @quizzes.route("/quiz/<id>")
@@ -30,16 +25,13 @@ def single_quiz(id):
     global _LOADED_QUIZZES
     result = ""
 
-    # TODO: check if the quiz is an existing one
-
-    if 'GET' == request.method:  
-        # TODO: retrieve a quiz <id>
-       
-
-    elif 'DELETE' == request.method:
-        # TODO: delete a quiz and get back number of answered questions
-        # and total number of questions
-
+    if exists_quiz(id):
+        if 'GET' == request.method:  
+            result = jsonify({"Quiz":_LOADED_QUIZZES[id]})
+        
+        elif 'DELETE' == request.method:
+            # TODO: delete a quiz and get back number of answered questions
+            # and total number of questions
     return result
 
 
@@ -47,14 +39,13 @@ def single_quiz(id):
 @quizzes.route("/quiz/<id>/question", methods=['GET'])
 def play_quiz(id):
     global _LOADED_QUIZZES
-    result = ""
-
+    
     # TODO: check if the quiz is an existing one
-
-    if 'GET' == request.method:  
-        # TODO: retrieve next question in a quiz, handle exceptions
-
-    return result
+    if exists_quiz(id):
+        if 'GET' == request.method:  
+            # TODO: retrieve next question in a quiz, handle exceptions
+            return _LOADED_QUIZZES[id].getQuestion()
+     
 
 
 # TODO: complete the decoration
