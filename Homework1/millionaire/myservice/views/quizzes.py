@@ -32,6 +32,7 @@ def single_quiz(id):
         elif 'DELETE' == request.method:
             # TODO: delete a quiz and get back number of answered questions
             # and total number of questions
+             result = jsonify({"number of answered questions ":_LOADED_QUIZZES[id].currentQuestion,"total number of questions ": len(_LOADED_QUIZZES[id].questions)})
     return result
 
 
