@@ -44,7 +44,7 @@ def play_quiz(id):
     try:
         exists_quiz(id)
     except NonExistingAnswerError as e:
-        result = e.value
+        return jsonify({"msg": str(e)})
 
     if 'GET' == request.method:
         try:
@@ -52,7 +52,7 @@ def play_quiz(id):
         except CompletedQuizError as e:
             result = jsonify({"msg": "completed quiz"})
         except LostQuizError as e2:
-            result = jsonify({"msg": str(e2)})
+            result = jsonify({"msg": "you lost!"})
 
     return result
 
@@ -62,24 +62,26 @@ def answer_question(id, answer):
     global _LOADED_QUIZZES
     result = ""
     # TODO: check if the quiz is an existing one
-    try:
-        exists_quiz(id)
-        quiz = _LOADED_QUIZZES[id]
-    except NonExistingAnswerError as e:
-        result = e.value
 
-    if 'PUT' == request.method and not quiz.isCompleted() and not quiz.isLost():
+    exists_quiz(id)
+    quiz = _LOADED_QUIZZES[id]
+    # TODO: check if quiz is lost or completed and act consequently
+    if quiz.isCompleted():
+        return jsonify({'msg': "completed quiz"})
+
+    if quiz.isLost():
+        return jsonify({'msg': "you lost!"})
+
+    if 'PUT' == request.method:
         # TODO: Check answers and handle exceptions
         try:
             result = quiz.checkAnswer(givenAnswer=answer)
         except CompletedQuizError as e:
-                if len(quiz.questions) == quiz.currentQuestion-1:
-                    result = "you won 1 million clams!"
-                else:
-                    result = str(e)
+                result = "you won 1 million clams!"
         except LostQuizError as e2:
-                result = str(e2)
-        print("answer : {} ".format(answer))
+                result = "you lost!"
+        except NonExistingAnswerError as e3:
+                result = "non-existing answer!"
         return jsonify({'msg': result})
 
 
